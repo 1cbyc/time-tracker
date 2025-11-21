@@ -85,7 +85,7 @@ export default merge(baseConfig, {
         ],
       },
       {
-        test: /^((?!\.global).)*\.css$/,
+        test: /^((?!\.global|tailwind).)*\.css$/,
         use: [
           {
             loader: 'style-loader',
@@ -98,6 +98,26 @@ export default merge(baseConfig, {
               },
               sourceMap: true,
               importLoaders: 1,
+            },
+          },
+        ],
+      },
+      // Tailwind CSS support
+      {
+        test: /tailwind\.css$/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              importLoaders: 1,
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              sourceMap: true,
             },
           },
         ],
