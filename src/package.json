@@ -1,0 +1,18 @@
+{
+  "name": "time-tracker",
+  "productName": "TimeTracker",
+  "version": "1.0.10",
+  "description": "Start and stop time, jump between tasks, and add details on how time was spent.",
+  "main": "./main.prod.js",
+  "author": {
+    "name": "Isaac Emmanuel",
+    "email": "ei@nsisong.com",
+    "url": "https://github.com/1cbyc"
+  },
+  "scripts": {
+    "electron-rebuild": "node -r ../.erb/scripts/BabelRegister.js ../.erb/scripts/ElectronRebuild.js",
+    "postinstall": "yarn electron-rebuild"
+  },
+  "license": "MIT",
+  "dependencies": {}
+}
