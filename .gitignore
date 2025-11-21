@@ -230,6 +230,7 @@ __snapshots__/
 
 # Documentation (gitignored as requested)
 docs/
+auto.sh
 
 # Electron
 app/dist/
