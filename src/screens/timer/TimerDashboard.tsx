@@ -141,6 +141,13 @@ const TimerDashboard: React.FC = observer(() => {
     setSelectedTask(undefined);
   }, []);
 
+  // Global keyboard shortcuts
+  useKeyboardShortcuts({
+    onStartStop: handleStartStop,
+    onCloseModal: drawerVisible ? handleCloseDrawer : undefined,
+    enabled: true,
+  });
+
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
