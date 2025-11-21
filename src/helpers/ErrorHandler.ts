@@ -92,7 +92,7 @@ export class ErrorHandler {
   /**
    * Handles network/API errors
    */
-  static handleNetworkError(error: Error) {
+  static handleNetworkError(_error: Error) {
     this.showError({
       message: 'Network error. Please check your connection and try again.',
       title: 'Connection Error',
