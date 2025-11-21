@@ -63,7 +63,7 @@ export class ErrorHandler {
   /**
    * Handles file operation errors
    */
-  static handleFileError(error: Error, operation: string) {
+  static handleFileError(_error: Error, operation: string) {
     const errorMessage = `Failed to ${operation}. Please check file permissions and try again.`;
     this.showError({
       message: errorMessage,
