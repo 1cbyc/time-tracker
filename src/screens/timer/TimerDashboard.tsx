@@ -155,7 +155,7 @@ const TimerDashboard: React.FC = observer(() => {
           <Space direction="vertical" size={4} className={classes.nav}>
             <Button
               type="text"
-              icon={<ClockCircleOutlined />}
+              icon={<Clock size={16} />}
               className={`${classes.navButton} ${activeNavItem === 'timer' ? classes.navButtonActive : ''}`}
               onClick={() => {
                 setActiveNavItem('timer');
@@ -166,7 +166,7 @@ const TimerDashboard: React.FC = observer(() => {
             </Button>
             <Button
               type="text"
-              icon={<BarChartOutlined />}
+              icon={<BarChart2 size={16} />}
               className={classes.navButton}
               onClick={() => {
                 setActiveNavItem('reports');
@@ -177,7 +177,7 @@ const TimerDashboard: React.FC = observer(() => {
             </Button>
             <Button
               type="text"
-              icon={<FolderOutlined />}
+              icon={<Folder size={16} />}
               className={classes.navButton}
               onClick={() => {
                 setActiveNavItem('projects');
@@ -188,7 +188,7 @@ const TimerDashboard: React.FC = observer(() => {
             </Button>
             <Button
               type="text"
-              icon={<TagOutlined />}
+              icon={<Tag size={16} />}
               className={classes.navButton}
               onClick={() => setActiveNavItem('tags')}
             >
@@ -221,7 +221,7 @@ const TimerDashboard: React.FC = observer(() => {
               <Button
                 type="text"
                 className={classes.projectButton}
-                icon={<PlusOutlined />}
+                icon={<Plus size={16} />}
                 onClick={() => history.push('/projects')}
               >
                 Add Project
@@ -233,7 +233,7 @@ const TimerDashboard: React.FC = observer(() => {
         <div className={classes.sidebarFooter}>
           <Button
             type="text"
-            icon={<SettingOutlined />}
+            icon={<Settings size={16} />}
             className={classes.navButton}
           >
             Settings
@@ -272,7 +272,7 @@ const TimerDashboard: React.FC = observer(() => {
                     </>
                   ) : (
                     <>
-                      <FolderOutlined />
+                      <Folder size={16} />
                       Project
                     </>
                   )}
@@ -285,7 +285,7 @@ const TimerDashboard: React.FC = observer(() => {
                   type="primary"
                   shape="circle"
                   size="large"
-                  icon={activeTask ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
+                  icon={activeTask ? <Pause size={16} /> : <Play size={16} className={classes.playIconOffset} />}
                   className={classes.playButton}
                   onClick={handleStartStop}
                   danger={!!activeTask}
@@ -302,7 +302,7 @@ const TimerDashboard: React.FC = observer(() => {
                 type="primary"
                 shape="circle"
                 size="large"
-                icon={activeTask ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
+                icon={activeTask ? <Pause size={20} /> : <Play size={20} className={classes.playIconOffset} />}
                 className={classes.playButtonMobile}
                 onClick={handleStartStop}
                 danger={!!activeTask}
@@ -353,7 +353,7 @@ const TimerDashboard: React.FC = observer(() => {
 
                     const entryMenu = (
                       <Menu>
-                        <Menu.Item key="restart" icon={<CaretRightOutlined />} onClick={() => handleEntryMenuClick(item.task, 'restart')}>
+                        <Menu.Item key="restart" icon={<Play size={14} />} onClick={() => handleEntryMenuClick(item.task, 'restart')}>
                           Restart Timer
                         </Menu.Item>
                         <Menu.Item key="edit" onClick={() => handleEntryMenuClick(item.task, 'edit')}>
@@ -410,7 +410,7 @@ const TimerDashboard: React.FC = observer(() => {
                               <Button
                                 type="text"
                                 size="small"
-                                icon={<CaretRightOutlined />}
+                                icon={<Play size={12} />}
                                 className={classes.entryActionButton}
                                 onClick={() => handleRestartTimer(item.task)}
                                 title="Restart timer"
@@ -419,7 +419,7 @@ const TimerDashboard: React.FC = observer(() => {
                                 <Button
                                   type="text"
                                   size="small"
-                                  icon={<MoreOutlined />}
+                                  icon={<MoreHorizontal size={12} />}
                                   className={classes.entryActionButton}
                                   title="More options"
                                 />
@@ -481,7 +481,8 @@ const useStyles = createUseStyles({
     color: '#fff',
   },
   logoIcon: {
-    fontSize: 20,
+    width: 20,
+    height: 20,
   },
   logoText: {
     color: '#262626',
@@ -640,6 +641,9 @@ const useStyles = createUseStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  playIconOffset: {
+    marginLeft: '2px', // ml-0.5 equivalent
   },
   content: {
     flex: 1,
