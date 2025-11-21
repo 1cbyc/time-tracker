@@ -9,7 +9,8 @@
           const link = document.createElement('link');
           link.rel = 'stylesheet';
           link.href = './dist/style.css';
-          // HACK: Writing the script path should be done with webpack
+          // Note: In production, stylesheet is injected here since webpack
+          // handles script injection but not CSS link injection for Electron
           document.getElementsByTagName('head')[0].appendChild(link);
         }
       })();
