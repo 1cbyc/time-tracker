@@ -12,6 +12,8 @@ import { ITimeRangeModel } from '../../modules/tasks/models/TaskModel';
 import { Undefined } from '../../types/CommonTypes';
 import TimeRangeDuration from './TimeRangeDuration';
 import IModalProps from '../../types/IModalProps';
+import ValidationHelper from '../../helpers/ValidationHelper';
+import ErrorHandler from '../../helpers/ErrorHandler';
 
 const { tasksStore } = rootStore;
 
@@ -34,7 +36,7 @@ const TimeRangeModal = observer(
     const handleOk = useCallback(() => {
       if (taskTime?.task && timeRange?.start) {
         const { task, index } = taskTime;
-        
+
         // Validate time range
         const validation = ValidationHelper.validateTimeRange({
           ...timeRange,
