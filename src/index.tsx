@@ -1,8 +1,5 @@
 import React from 'react';
-
-// Due to issue with antd, we need to use old react api
-import { render } from 'react-dom';
-// FIXME: import { createRoot } from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 
 import dotenv from 'dotenv';
 
@@ -14,5 +11,10 @@ dotenv.config();
 
 initSentry();
 
-render(<App />, document.getElementById('root'));
-// createRoot(document.getElementById('root')).render(<App />);
+const container = document.getElementById('root');
+if (!container) {
+  throw new Error('Root element not found');
+}
+
+const root = createRoot(container);
+root.render(<App />);
