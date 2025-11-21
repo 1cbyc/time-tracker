@@ -34,10 +34,21 @@ const TimeRangeModal = observer(
     const handleOk = useCallback(() => {
       if (taskTime?.task && timeRange?.start) {
         const { task, index } = taskTime;
+        
+        // Validate time range
+        const validation = ValidationHelper.validateTimeRange({
+          ...timeRange,
+          description,
+        });
+        if (!validation.valid) {
+          ErrorHandler.handleValidationError(validation.errors);
+          return;
+        }
+
         timeRange.description = description;
         tasksStore.setTime(task, index, timeRange);
+        onClose();
       }
-      onClose();
     }, [description, onClose, taskTime, timeRange]);
 
     useEffect(() => {
