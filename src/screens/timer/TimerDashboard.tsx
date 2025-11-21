@@ -18,10 +18,12 @@ import { useHistory } from 'react-router-dom';
 
 import rootStore from '../../modules/RootStore';
 import TaskModel from '../../modules/tasks/models/TaskModel';
+import TaskTimeItemModel from '../../modules/tasks/models/TaskTimeItemModel';
 import { getTimeItems } from '../../helpers/TaskHelper';
 import { msToTime } from '../../helpers/DateTime';
 import ProjectModel from '../../modules/projects/models/ProjectModel';
 import { v4 as uuid } from 'uuid';
+import DrawerTask from '../projects/components/DrawerTask/DrawerTask';
 
 const { Sider, Content } = Layout;
 const { tasksStore, projectStore } = rootStore;
@@ -32,6 +34,8 @@ const TimerDashboard: React.FC = observer(() => {
   const [currentTaskTitle, setCurrentTaskTitle] = useState('');
   const [selectedProject, setSelectedProject] = useState<ProjectModel | null>(null);
   const [activeNavItem, setActiveNavItem] = useState('timer');
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<TaskModel | undefined>();
 
   const today = useMemo(() => new Date(), []);
   const todayTasks = useMemo(() => tasksStore.getTasksByDate(today), [today]);
@@ -120,15 +124,21 @@ const TimerDashboard: React.FC = observer(() => {
     tasksStore.startTimer(task);
   }, []);
 
-  const handleEntryMenuClick = useCallback((task: TaskModel, action: string) => {
+  const handleEntryMenuClick = useCallback((item: TaskTimeItemModel, action: string) => {
     if (action === 'restart') {
-      handleRestartTimer(task);
+      handleRestartTimer(item.task);
     } else if (action === 'edit') {
-      // TODO: Open task edit drawer
+      setSelectedTask(item.task);
+      setDrawerVisible(true);
     } else if (action === 'delete') {
-      // TODO: Delete time entry
+      tasksStore.removeTime(item.task, item.index);
     }
   }, [handleRestartTimer]);
+
+  const handleCloseDrawer = useCallback(() => {
+    setDrawerVisible(false);
+    setSelectedTask(undefined);
+  }, []);
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
@@ -353,14 +363,14 @@ const TimerDashboard: React.FC = observer(() => {
 
                     const entryMenu = (
                       <Menu>
-                        <Menu.Item key="restart" icon={<Play size={14} />} onClick={() => handleEntryMenuClick(item.task, 'restart')}>
+                        <Menu.Item key="restart" icon={<Play size={14} />} onClick={() => handleEntryMenuClick(item, 'restart')}>
                           Restart Timer
                         </Menu.Item>
-                        <Menu.Item key="edit" onClick={() => handleEntryMenuClick(item.task, 'edit')}>
+                        <Menu.Item key="edit" onClick={() => handleEntryMenuClick(item, 'edit')}>
                           Edit
                         </Menu.Item>
                         <Menu.Divider />
-                        <Menu.Item key="delete" danger onClick={() => handleEntryMenuClick(item.task, 'delete')}>
+                        <Menu.Item key="delete" danger onClick={() => handleEntryMenuClick(item, 'delete')}>
                           Delete
                         </Menu.Item>
                       </Menu>
@@ -439,6 +449,11 @@ const TimerDashboard: React.FC = observer(() => {
           </div>
         </Content>
       </Layout>
+      <DrawerTask
+        task={selectedTask}
+        visible={drawerVisible}
+        onClose={handleCloseDrawer}
+      />
     </Layout>
   );
 });
