@@ -5,6 +5,7 @@ import { Layout } from 'antd';
 import ProjectsScreen from './projects/ProjectsScreen';
 import HoursScreen from './hours/HoursScreen';
 import Dashboard from './dashboard/Dashboard';
+import TimerDashboard from './timer/TimerDashboard';
 import GaService from '../services/gaService/GaService';
 import Header from '../components/Header';
 
@@ -19,14 +20,17 @@ const Main = () => {
     GaService.pageView(path);
   }, [location.pathname]);
 
+  const isTimerRoute = location.pathname === '/timer';
+
   return (
     <Layout className="layout">
-      <Header />
+      {!isTimerRoute && <Header />}
       <Switch>
+        <Route path="/timer" component={TimerDashboard} />
         <Route path="/hours" component={HoursScreen} />
         <Route path="/projects" component={ProjectsScreen} />
         <Route path="/dashboard" component={Dashboard} />
-        <Redirect from="*" to="/projects" />
+        <Redirect from="*" to="/timer" />
       </Switch>
     </Layout>
   );
