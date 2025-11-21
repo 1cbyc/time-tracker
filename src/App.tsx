@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import Main from './screens/Main';
 import 'antd/dist/antd.less';
 import './App.global.less';
+import './styles/v0-theme.css';
 
 const App = () => {
   // useEffect(() => {
