@@ -115,7 +115,12 @@ const createWindow = async () => {
     color: '#F14236',
   });
 
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  if (process.env.NODE_ENV === 'development') {
+    const port = process.env.PORT || 1212;
+    mainWindow.loadURL(`http://localhost:${port}`);
+  } else {
+    mainWindow.loadURL(`file://${__dirname}/index.html`);
+  }
 
   // Use 'ready-to-show' event for better performance
   // https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
