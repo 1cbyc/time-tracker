@@ -20,7 +20,7 @@ export default observer(function TaskInput({ className }: Props) {
       // Hotkey: Enter
       if (event.key === 'Enter') {
         const trimmedText = text.trim();
-        
+
         // Validate task title
         const validation = ValidationHelper.validateTaskTitle(trimmedText);
         if (!validation.valid) {
