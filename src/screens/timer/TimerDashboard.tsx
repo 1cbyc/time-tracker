@@ -25,6 +25,8 @@ import ProjectModel from '../../modules/projects/models/ProjectModel';
 import { v4 as uuid } from 'uuid';
 import DrawerTask from '../projects/components/DrawerTask/DrawerTask';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
+import ValidationHelper from '../../helpers/ValidationHelper';
+import ErrorHandler from '../../helpers/ErrorHandler';
 
 const { Sider, Content } = Layout;
 const { tasksStore, projectStore } = rootStore;
@@ -85,12 +87,26 @@ const TimerDashboard: React.FC = observer(() => {
   const handleStartStop = useCallback(() => {
     if (activeTask) {
       tasksStore.stopTimer();
-    } else if (currentTaskTitle.trim()) {
+    } else {
+      const trimmedTitle = currentTaskTitle.trim();
+      
+      // Validate task title
+      if (!trimmedTitle) {
+        ErrorHandler.showWarning('Please enter a task title');
+        return;
+      }
+
+      const validation = ValidationHelper.validateTaskTitle(trimmedTitle);
+      if (!validation.valid) {
+        ErrorHandler.handleValidationError(validation.errors);
+        return;
+      }
+
       // Create a new task and start timer
       const projectId = selectedProject?.key || projectStore.activeProject || projectStore.projects[0]?.key || '';
       const newTask = new TaskModel({
         key: uuid(),
-        title: currentTaskTitle.trim(),
+        title: trimmedTitle,
         projectId,
         active: false,
         checked: false,
