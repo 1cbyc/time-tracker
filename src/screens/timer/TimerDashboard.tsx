@@ -3,17 +3,16 @@ import { Layout, Input, Button, Card, Space, Divider } from 'antd';
 import { observer } from 'mobx-react';
 import { createUseStyles } from 'react-jss';
 import {
-  ClockCircleOutlined,
-  PlayCircleOutlined,
-  PauseCircleOutlined,
-  FolderOutlined,
-  BarChartOutlined,
-  TagOutlined,
-  SettingOutlined,
-  PlusOutlined,
-  MoreOutlined,
-  CaretRightOutlined,
-} from '@ant-design/icons';
+  Play,
+  Pause,
+  Plus,
+  Clock,
+  Tag,
+  MoreHorizontal,
+  BarChart2,
+  Settings,
+  Folder,
+} from 'lucide-react';
 import { Dropdown, Menu } from 'antd';
 import { useHistory } from 'react-router-dom';
 
@@ -146,7 +145,7 @@ const TimerDashboard: React.FC = observer(() => {
         <div className={classes.sidebarHeader}>
           <div className={classes.logo}>
             <div className={classes.logoIconContainer}>
-              <ClockCircleOutlined className={classes.logoIcon} />
+              <Clock className={classes.logoIcon} />
             </div>
             <span className={classes.logoText}>TimeTracker</span>
           </div>
