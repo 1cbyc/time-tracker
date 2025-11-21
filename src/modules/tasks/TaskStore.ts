@@ -56,7 +56,7 @@ export default class TaskStore {
       this.stopTimer();
     }
 
-    task.time.splice(timeIndex, 1); // TODO move to task
+    task.removeTimeRange(timeIndex);
     this.saveInStorage();
     GaService.event(EEventCategory.TimeRange, ETimeRangeEvents.Delete);
   }
