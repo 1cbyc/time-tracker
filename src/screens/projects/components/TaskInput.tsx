@@ -5,6 +5,8 @@ import { v4 as uuid } from 'uuid';
 
 import rootStore from '../../../modules/RootStore';
 import TaskModel from '../../../modules/tasks/models/TaskModel';
+import ValidationHelper from '../../../helpers/ValidationHelper';
+import ErrorHandler from '../../../helpers/ErrorHandler';
 
 interface Props {
   className?: string;
@@ -17,11 +19,20 @@ export default observer(function TaskInput({ className }: Props) {
     (event: KeyboardEvent) => {
       // Hotkey: Enter
       if (event.key === 'Enter') {
+        const trimmedText = text.trim();
+        
+        // Validate task title
+        const validation = ValidationHelper.validateTaskTitle(trimmedText);
+        if (!validation.valid) {
+          ErrorHandler.handleValidationError(validation.errors);
+          return;
+        }
+
         const { tasksStore, projectStore } = rootStore;
         tasksStore.add(
           new TaskModel({
             key: uuid(),
-            title: text,
+            title: trimmedText,
             projectId: projectStore.activeProject,
             active: false,
             time: [],
