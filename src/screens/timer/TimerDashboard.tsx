@@ -19,9 +19,8 @@ import { useHistory } from 'react-router-dom';
 
 import rootStore from '../../modules/RootStore';
 import TaskModel from '../../modules/tasks/models/TaskModel';
-import { getTasksWithTotalTimeForDay, getTimeItems } from '../../helpers/TaskHelper';
+import { getTimeItems } from '../../helpers/TaskHelper';
 import { msToTime } from '../../helpers/DateTime';
-import * as TaskHooks from '../../hooks/TaskHooks';
 import ProjectModel from '../../modules/projects/models/ProjectModel';
 import { v4 as uuid } from 'uuid';
 
@@ -39,7 +38,6 @@ const TimerDashboard: React.FC = observer(() => {
   const todayTasks = useMemo(() => tasksStore.getTasksByDate(today), [today]);
   const timeItems = useMemo(() => getTimeItems(todayTasks, today), [todayTasks, today]);
   const activeTask = tasksStore.activeTask;
-  const duration = TaskHooks.useTaskDuration(activeTask);
 
   // Timer display state - updates every second when timer is running
   const [timerSeconds, setTimerSeconds] = useState(0);
@@ -51,9 +49,9 @@ const TimerDashboard: React.FC = observer(() => {
         setTimerSeconds(Math.floor(durationMs / 1000));
       }, 1000);
       return () => clearInterval(interval);
-    } else {
-      setTimerSeconds(0);
     }
+    setTimerSeconds(0);
+    return undefined;
   }, [activeTask?.active, activeTask]);
 
   // Calculate stats
@@ -95,14 +93,14 @@ const TimerDashboard: React.FC = observer(() => {
         expanded: true,
         time: [],
         datesInProgress: [],
-        details: '',
+        details: [],
         children: [],
         parent: undefined,
       });
-      
+
       // Add task to store
       tasksStore.add(newTask);
-      
+
       // Start timer
       tasksStore.startTimer(newTask);
       setCurrentTaskTitle('');
@@ -138,12 +136,6 @@ const TimerDashboard: React.FC = observer(() => {
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const getElapsedSeconds = () => {
-    if (!activeTask) return 0;
-    const durationMs = activeTask.duration;
-    return Math.floor(durationMs / 1000);
   };
 
 
@@ -360,13 +352,29 @@ const TimerDashboard: React.FC = observer(() => {
                       ? item.time.end.getTime() - item.time.start.getTime()
                       : Date.now() - item.time.start.getTime(), false);
 
+                    const entryMenu = (
+                      <Menu>
+                        <Menu.Item key="restart" icon={<CaretRightOutlined />} onClick={() => handleEntryMenuClick(item.task, 'restart')}>
+                          Restart Timer
+                        </Menu.Item>
+                        <Menu.Item key="edit" onClick={() => handleEntryMenuClick(item.task, 'edit')}>
+                          Edit
+                        </Menu.Item>
+                        <Menu.Divider />
+                        <Menu.Item key="delete" danger onClick={() => handleEntryMenuClick(item.task, 'delete')}>
+                          Delete
+                        </Menu.Item>
+                      </Menu>
+                    );
+
                     return (
                       <div key={`${item.task.key}-${item.index}`}>
                         <div className={classes.entryRow}>
                           <div className={classes.entryContent}>
                             <div className={classes.entryTitle}>{item.task.title}</div>
+                            {/* Mobile project badge */}
                             {project && (
-                              <div className={classes.entryProject}>
+                              <div className={classes.entryProjectMobile}>
                                 <span
                                   className={classes.projectDot}
                                   style={{ backgroundColor: project.color || '#1890ff' }}
@@ -375,13 +383,49 @@ const TimerDashboard: React.FC = observer(() => {
                               </div>
                             )}
                           </div>
+                          {/* Desktop project display */}
+                          <div className={classes.entryProjectDesktop}>
+                            {project ? (
+                              <span className={classes.entryProjectBadge}>
+                                <span
+                                  className={classes.projectDot}
+                                  style={{ backgroundColor: project.color || '#1890ff' }}
+                                />
+                                {project.title}
+                              </span>
+                            ) : (
+                              <span className={classes.entryProjectNoProject}>No Project</span>
+                            )}
+                          </div>
                           <div className={classes.entryTime}>
-                            <div className={classes.entryTimeRange}>
-                              {item.time.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                              {' - '}
-                              {item.time.end?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'}) || 'Running...'}
+                            <div className={classes.entryTimeInfo}>
+                              <div className={classes.entryTimeRange}>
+                                {item.time.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                {' - '}
+                                {item.time.end?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'}) || 'Running...'}
+                              </div>
+                              <div className={classes.entryDuration}>{duration}</div>
                             </div>
-                            <div className={classes.entryDuration}>{duration}</div>
+                            {/* Hover actions */}
+                            <div className={classes.entryActions}>
+                              <Button
+                                type="text"
+                                size="small"
+                                icon={<CaretRightOutlined />}
+                                className={classes.entryActionButton}
+                                onClick={() => handleRestartTimer(item.task)}
+                                title="Restart timer"
+                              />
+                              <Dropdown overlay={entryMenu} trigger={['click']}>
+                                <Button
+                                  type="text"
+                                  size="small"
+                                  icon={<MoreOutlined />}
+                                  className={classes.entryActionButton}
+                                  title="More options"
+                                />
+                              </Dropdown>
+                            </div>
                           </div>
                         </div>
                         {index < timeItems.length - 1 && <Divider className={classes.entryDivider} />}
@@ -427,9 +471,18 @@ const useStyles = createUseStyles({
     fontWeight: 600,
     fontSize: 18,
   },
+  logoIconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: '#1890ff',
+    color: '#fff',
+  },
   logoIcon: {
     fontSize: 20,
-    color: '#1890ff',
   },
   logoText: {
     color: '#262626',
@@ -447,9 +500,14 @@ const useStyles = createUseStyles({
     textAlign: 'left',
     height: 36,
     padding: '0 12px',
+    justifyContent: 'flex-start',
     '&:hover': {
       backgroundColor: '#f0f0f0',
     },
+  },
+  navButtonActive: {
+    backgroundColor: '#f0f0f0',
+    color: '#1890ff',
   },
   divider: {
     margin: '16px 8px',
@@ -493,13 +551,25 @@ const useStyles = createUseStyles({
   },
   timerHeader: {
     borderBottom: '1px solid #e8e8e8',
-    backgroundColor: '#fafafa',
+    backgroundColor: 'rgba(250, 250, 250, 0.8)',
     padding: 16,
     boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
   },
-  timerInputContainer: {
+  timerHeaderInner: {
     maxWidth: 1200,
     margin: '0 auto',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 16,
+    '@media (min-width: 640px)': {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+  },
+  timerInputContainer: {
+    flex: 1,
     display: 'flex',
     alignItems: 'center',
     gap: 12,
@@ -518,10 +588,41 @@ const useStyles = createUseStyles({
       boxShadow: 'none',
     },
   },
-  timerControls: {
-    display: 'flex',
+  timerControlsDesktop: {
+    display: 'none',
     alignItems: 'center',
     gap: 12,
+    '@media (min-width: 640px)': {
+      display: 'flex',
+    },
+  },
+  timerControlsMobile: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    '@media (min-width: 640px)': {
+      display: 'none',
+    },
+  },
+  projectSelectorButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  },
+  projectSelectorButtonMuted: {
+    color: '#8c8c8c',
+  },
+  timerDisplayMobile: {
+    fontFamily: 'monospace',
+    fontSize: 24,
+    fontWeight: 500,
+  },
+  playButtonMobile: {
+    width: 48,
+    height: 48,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   verticalDivider: {
     height: 24,
@@ -606,11 +707,17 @@ const useStyles = createUseStyles({
   },
   entryRow: {
     display: 'flex',
-    alignItems: 'center',
+    flexDirection: 'column',
     padding: 16,
-    gap: 16,
+    gap: 12,
+    transition: 'background-color 0.2s',
     '&:hover': {
       backgroundColor: '#fafafa',
+    },
+    '@media (min-width: 640px)': {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 16,
     },
   },
   entryContent: {
@@ -621,14 +728,45 @@ const useStyles = createUseStyles({
     fontWeight: 500,
     marginBottom: 4,
   },
-  entryProject: {
+  entryProjectMobile: {
     display: 'flex',
     alignItems: 'center',
     fontSize: 13,
     color: '#8c8c8c',
     marginTop: 4,
+    '@media (min-width: 640px)': {
+      display: 'none',
+    },
+  },
+  entryProjectDesktop: {
+    display: 'none',
+    flex: 1,
+    '@media (min-width: 640px)': {
+      display: 'block',
+    },
+  },
+  entryProjectBadge: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#1890ff',
+  },
+  entryProjectNoProject: {
+    fontSize: 14,
+    color: '#8c8c8c',
   },
   entryTime: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 16,
+    '@media (min-width: 640px)': {
+      justifyContent: 'flex-end',
+    },
+  },
+  entryTimeInfo: {
     display: 'flex',
     alignItems: 'center',
     gap: 16,
@@ -647,6 +785,23 @@ const useStyles = createUseStyles({
   },
   entryDivider: {
     margin: 0,
+  },
+  entryActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 4,
+    opacity: 0,
+    transition: 'opacity 0.2s',
+    '.entryRow:hover &': {
+      opacity: 1,
+    },
+  },
+  entryActionButton: {
+    width: 32,
+    height: 32,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   emptyState: {
     padding: 48,
