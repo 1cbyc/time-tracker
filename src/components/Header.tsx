@@ -20,6 +20,9 @@ function Header() {
   return (
     <HeaderBase>
       <HeaderLink>
+        <Link to="/timer">Timer</Link>
+      </HeaderLink>
+      <HeaderLink>
         <Link to="/hours">Hours</Link>
       </HeaderLink>
       <HeaderLink>
