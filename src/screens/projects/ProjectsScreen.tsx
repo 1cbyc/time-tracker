@@ -18,6 +18,7 @@ import DrawerTask from './components/DrawerTask/DrawerTask';
 import ProjectNode from './components/ProjectNode/ProjectNode';
 import EditProjectModal from './components/ProjectModals/EditProjectModal';
 import { first } from '../../helpers/ArrayHelper';
+import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 
 const { Sider } = Layout;
 
@@ -111,6 +112,16 @@ function Projects() {
   const handleHideProjectModal = useCallback(() => {
     setShowProjectModal(false);
   }, []);
+
+  // Global keyboard shortcuts
+  useKeyboardShortcuts({
+    onCloseModal: drawerVisible
+      ? handleCloseDrawer
+      : showProjectModal
+      ? handleHideProjectModal
+      : undefined,
+    enabled: true,
+  });
 
   return (
     <Layout>
