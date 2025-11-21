@@ -89,7 +89,7 @@ const TimerDashboard: React.FC = observer(() => {
       tasksStore.stopTimer();
     } else {
       const trimmedTitle = currentTaskTitle.trim();
-      
+
       // Validate task title
       if (!trimmedTitle) {
         ErrorHandler.showWarning('Please enter a task title');
