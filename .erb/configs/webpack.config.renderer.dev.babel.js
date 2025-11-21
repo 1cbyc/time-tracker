@@ -336,9 +336,14 @@ export default merge(baseConfig, {
     historyApiFallback: {
       verbose: true,
       disableDotRule: false,
-      index: 'index.html',
+      index: '/index.html',
     },
-    before() {
+    before(app) {
+      // Serve index.html at root for Electron
+      app.get('/', (req, res) => {
+        res.sendFile(path.join(__dirname, '../../src/index.html'));
+      });
+
       console.log('Starting Main Process...');
       // Remove NODE_OPTIONS for Electron as it doesn't support --openssl-legacy-provider
       const electronEnv = { ...process.env };
