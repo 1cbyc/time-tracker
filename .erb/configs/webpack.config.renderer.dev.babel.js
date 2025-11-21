@@ -164,6 +164,27 @@ export default merge(baseConfig, {
           },
         ],
       },
+      // CSS support - PostCSS with Tailwind
+      {
+        test: /\.css$/,
+        exclude: /\.global\.css$/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              importLoaders: 1,
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              sourceMap: true,
+            },
+          },
+        ],
+      },
       // WOFF Font
       {
         test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
