@@ -53,9 +53,27 @@ export default abstract class AbstractFileRepository<T = any> {
   public restore(defaultValue: T): T {
     console.log(`${this.logPrefix} restore ${this.filePath}`);
     if (fs.existsSync(this.filePath)) {
-      const data = fs.readFileSync(this.filePath, { encoding: 'utf-8' });
-      // TODO handle parse error. Backup file with issues and return defaultValue
-      return JSON.parse(data);
+      try {
+        const data = fs.readFileSync(this.filePath, { encoding: 'utf-8' });
+        return JSON.parse(data);
+      } catch (error) {
+        // Backup corrupted file and return default value
+        const backupPath = `${this.filePath}.corrupted.${Date.now()}`;
+        console.error(
+          `${this.logPrefix} parse error, backing up corrupted file to ${backupPath}`,
+          error
+        );
+        try {
+          fs.copyFileSync(this.filePath, backupPath);
+          console.log(`${this.logPrefix} corrupted file backed up successfully`);
+        } catch (backupError) {
+          console.error(
+            `${this.logPrefix} failed to backup corrupted file`,
+            backupError
+          );
+        }
+        return defaultValue;
+      }
     }
     return defaultValue;
   }
