@@ -64,7 +64,9 @@ export default class TaskModel extends AbstractModel
   time: ITimeRangeModel[] = [];
   datesInProgress: Date[] = [];
   details: string = '';
-  withoutActions: boolean = false; // TODO make a new class
+  // flag to indicate this task node should not display action buttons (e.g., project nodes displayed as tasks)
+  // used in TreeModelHelper when creating project proxies as task nodes
+  withoutActions: boolean = false;
 
   constructor(props: IJsonTaskModel | TaskModel) {
     super();
@@ -98,6 +100,7 @@ export default class TaskModel extends AbstractModel
       setDetails: action,
       start: action,
       stop: action,
+      removeTimeRange: action,
     });
   }
 
@@ -148,6 +151,12 @@ export default class TaskModel extends AbstractModel
       this.active = false;
       const range = this.time[this.time.length - 1];
       range.end = new Date();
+    }
+  }
+
+  removeTimeRange(timeIndex: number) {
+    if (timeIndex >= 0 && timeIndex < this.time.length) {
+      this.time.splice(timeIndex, 1);
     }
   }
 
