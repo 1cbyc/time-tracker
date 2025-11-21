@@ -326,7 +326,8 @@ export default merge(baseConfig, {
     lazy: false,
     hot: true,
     headers: { 'Access-Control-Allow-Origin': '*' },
-    contentBase: path.join(__dirname, 'dist'),
+    contentBase: path.join(__dirname, '../../src'),
+    watchContentBase: true,
     watchOptions: {
       aggregateTimeout: 300,
       ignored: /node_modules/,
@@ -335,6 +336,7 @@ export default merge(baseConfig, {
     historyApiFallback: {
       verbose: true,
       disableDotRule: false,
+      index: 'index.html',
     },
     before() {
       console.log('Starting Main Process...');
