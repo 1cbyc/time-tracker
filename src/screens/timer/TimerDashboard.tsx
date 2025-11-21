@@ -24,6 +24,7 @@ import { msToTime } from '../../helpers/DateTime';
 import ProjectModel from '../../modules/projects/models/ProjectModel';
 import { v4 as uuid } from 'uuid';
 import DrawerTask from '../projects/components/DrawerTask/DrawerTask';
+import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 
 const { Sider, Content } = Layout;
 const { tasksStore, projectStore } = rootStore;
