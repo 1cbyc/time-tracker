@@ -266,7 +266,7 @@ const TimerDashboard: React.FC = observer(() => {
           <div className={classes.timerHeaderInner}>
             <div className={classes.timerInputContainer}>
               <Input
-                placeholder="What are you working on?"
+                placeholder="What are you working on? (Press Space to start/stop)"
                 className={classes.timerInput}
                 value={currentTaskTitle}
                 onChange={(e) => setCurrentTaskTitle(e.target.value)}
