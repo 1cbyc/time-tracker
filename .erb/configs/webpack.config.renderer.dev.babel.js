@@ -338,9 +338,12 @@ export default merge(baseConfig, {
     },
     before() {
       console.log('Starting Main Process...');
+      // Remove NODE_OPTIONS for Electron as it doesn't support --openssl-legacy-provider
+      const electronEnv = { ...process.env };
+      delete electronEnv.NODE_OPTIONS;
       spawn('yarn', ['start:main'], {
         shell: true,
-        env: process.env,
+        env: electronEnv,
         stdio: 'inherit',
       })
         .on('close', (code) => process.exit(code))
