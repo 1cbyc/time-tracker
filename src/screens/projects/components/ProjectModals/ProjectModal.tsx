@@ -29,7 +29,7 @@ export default observer(function ProjectModal({
 
   function handleOk() {
     const trimmedName = projectName.trim();
-    
+
     // Validate project title
     const titleValidation = ValidationHelper.validateProjectTitle(trimmedName);
     if (!titleValidation.valid) {
